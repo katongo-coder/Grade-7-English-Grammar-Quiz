@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>English Grammar Quiz - Prepared By Mr. Katongo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        @keyframes scrollText { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .scrolling-container { width: 100%; overflow: hidden; background: #4f46e5; color: white; padding: 12px 0; position: fixed; top: 0; left:0; z-index: 50; white-space: nowrap; }
+        .scrolling-text { display: inline-block; animation: scrollText 15s linear infinite; font-weight: 800; text-transform: uppercase; }
+        @keyframes rotateTitle { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .rotating-section { display: flex; justify-content: center; margin-top: 3rem; margin-bottom: 2rem; }
+        .rotating-text { display: inline-block; animation: rotateTitle 15s linear infinite; transform-origin: center; }
+        .selected { border-color: #4f46e5 !important; background-color: #f5f3ff !important; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; padding: 0 !important; }
+            .print-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; border-radius: 0 !important; }
+            .scrolling-container, .rotating-section { display: none !important; }
+        }
+    </style>
+</head>
+<body class="p-4 pt-24 min-h-screen flex flex-col items-center">
+    <div class="scrolling-container no-print">
+        <div class="scrolling-text">Prepared By Mr. Katongo • Grade 7 English Grammar: Do, Does, Did & Have • Knowledge Is Power • Prepared By Mr. Katongo</div>
+    </div>
+
+    <div class="max-w-3xl w-full">
+        <div id="reg-box" class="bg-white p-10 rounded-[40px] shadow-2xl border border-indigo-50 no-print">
+            <h2 class="text-2xl font-black text-indigo-900 mb-2 uppercase text-center">Grade 7 English Grammar Quiz</h2>
+            <p class="text-center font-black text-indigo-600 uppercase tracking-[0.2em] text-[10px] mb-8">Prepared By Mr. Katongo</p>
+            
+            <h2 class="text-xl font-black text-slate-700 mb-6 uppercase">Pupil Registration</h2>
+            <p class="text-xs text-slate-400 mb-4 font-bold uppercase tracking-widest">* Name is required to start</p>
+            
+            <input type="text" id="sName" oninput="validate()" placeholder="Enter Full Name" class="w-full p-4 mb-4 border rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 transition">
+            <input type="text" id="sId" oninput="validate()" placeholder="Enter Pupil ID (Optional)" class="w-full p-4 mb-6 border rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 transition">
+            
+            <button onclick="start()" id="startB" disabled class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black opacity-30 shadow-lg uppercase tracking-widest transition-all">Begin Quiz</button>
+        </div>
+
+        <div id="quiz-box" class="hidden bg-white p-10 rounded-[40px] shadow-2xl border border-indigo-50 no-print">
+            <div class="flex justify-between items-center mb-8 border-b pb-4">
+                <div class="bg-indigo-50 px-4 py-2 rounded-full border border-indigo-100"><span id="timer" class="font-black text-indigo-700">00:00</span></div>
+                <span id="prog" class="text-xs font-black text-slate-400 uppercase tracking-widest"></span>
+            </div>
+            <h2 id="qText" class="text-2xl font-bold text-slate-800 mb-10 leading-tight"></h2>
+            <div id="opts" class="space-y-4"></div>
+            <div class="flex justify-end mt-10">
+                <button id="nextB" disabled class="bg-indigo-600 text-white px-12 py-4 rounded-2xl font-black shadow-lg disabled:opacity-20 uppercase tracking-widest">Next Question</button>
+            </div>
+        </div>
+
+        <div id="res-box" class="hidden space-y-8">
+            <div class="bg-white p-10 rounded-[40px] shadow-2xl border-b-[12px] border-indigo-600 print-card">
+                <h2 class="text-3xl font-black text-slate-800 text-center uppercase mb-1 tracking-tight">Official ICT Report</h2>
+                <p class="text-center font-black text-indigo-600 uppercase tracking-[0.2em] text-[10px] mb-8">Approved By Mr. Katongo</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-8 bg-slate-50 p-6 rounded-3xl border border-indigo-50">
+                    <div><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pupil Name:</p><p id="rn" class="font-black text-slate-800 text-lg"></p></div>
+                    <div><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pupil's ID Number:</p><p id="ri" class="font-black text-slate-800 text-lg"></p></div>
+                    <div class="mt-2"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Number Of Attempt(s):</p><p id="ra" class="font-black text-indigo-600"></p></div>
+                    <div class="mt-2"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Time Taken:</p><p id="rt" class="font-black text-slate-800"></p></div>
+                </div>
+
+                <div class="text-center py-4">
+                    <p class="text-7xl font-black text-indigo-600 mb-2"><span id="pct"></span>%</p>
+                    <p class="text-xl font-bold text-slate-700 uppercase">Total Marks: <span id="raw"></span></p>
+                    <p id="grade" class="mt-6 inline-block px-8 py-2 rounded-full font-black text-sm uppercase tracking-widest"></p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10 no-print">
+                    <button onclick="window.print()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl">Print Report / PDF</button>
+                    <button onclick="restart()" class="bg-slate-800 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl">Retake Quiz</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-10 rounded-[40px] shadow-xl border border-indigo-50 print-card">
+                <h3 class="text-xl font-black text-slate-800 mb-8 border-b pb-4">Performance Review</h3>
+                <div id="revList" class="space-y-6"></div>
+                <div class="mt-12 pt-8 border-t text-center">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Prepared By Mr. Katongo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="rotating-section no-print">
+        <div class="rotating-text bg-white px-10 py-5 rounded-full shadow-lg border-2 border-indigo-50 font-black text-indigo-700 uppercase text-xs tracking-widest">Prepared By Mr. Katongo</div>
+    </footer>
+
+    <script>
+        const data = [
+            {
+                "question": "Which helping verb is used for 'She' in the present tense?",
+                "correctText": "Does",
+                "rationale": "We use 'Does' for third-person singular subjects (He, She, It).",
+                "answerOptions": [
+                    {"text": "Do", "isCorrect": false},
+                    {"text": "Does", "isCorrect": true},
+                    {"text": "Did", "isCorrect": false},
+                    {"text": "Has", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Choose the correct question: ______ you like pizza?",
+                "correctText": "Do",
+                "rationale": "'Do' is used for the second-person pronoun 'You'.",
+                "answerOptions": [
+                    {"text": "Does", "isCorrect": false},
+                    {"text": "Do", "isCorrect": true},
+                    {"text": "Did", "isCorrect": false},
+                    {"text": "Has", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "What happens to the main verb when 'Does' is used in a question?",
+                "correctText": "It stays in the base form (no -s).",
+                "rationale": "'Does' already carries the third-person 's', so the main verb becomes base form (e.g., Does she like...?)",
+                "answerOptions": [
+                    {"text": "It adds an -s", "isCorrect": false},
+                    {"text": "It changes to past tense", "isCorrect": false},
+                    {"text": "It stays in the base form (no -s).", "isCorrect": true},
+                    {"text": "It becomes 'having'", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Fill in the blank: 'Where ______ they go for vacation last year?'",
+                "correctText": "did",
+                "rationale": "'Last year' indicates the past tense, so we use 'Did' for all subjects.",
+                "answerOptions": [
+                    {"text": "do", "isCorrect": false},
+                    {"text": "does", "isCorrect": false},
+                    {"text": "did", "isCorrect": true},
+                    {"text": "have", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Which is the correct question form for: 'He has a cat'?",
+                "correctText": "Does he have a cat?",
+                "rationale": "When using 'Does', 'has' changes back to the base form 'have'.",
+                "answerOptions": [
+                    {"text": "Does he has a cat?", "isCorrect": false},
+                    {"text": "Do he have a cat?", "isCorrect": false},
+                    {"text": "Does he have a cat?", "isCorrect": true},
+                    {"text": "Did he has a cat?", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Which helping verb is used for 'They' in the present tense?",
+                "correctText": "Do",
+                "rationale": "We use 'Do' for plural subjects like 'They' and 'We'.",
+                "answerOptions": [
+                    {"text": "Does", "isCorrect": false},
+                    {"text": "Do", "isCorrect": true},
+                    {"text": "Has", "isCorrect": false},
+                    {"text": "Did", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Convert to a question: 'The dog barks at night.'",
+                "correctText": "Does the dog bark at night?",
+                "rationale": "'The dog' is singular (it), so we use 'Does' and remove the -s from 'barks'.",
+                "answerOptions": [
+                    {"text": "Do the dog bark at night?", "isCorrect": false},
+                    {"text": "Does the dog barks at night?", "isCorrect": false},
+                    {"text": "Does the dog bark at night?", "isCorrect": true},
+                    {"text": "Did the dog barks at night?", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Which helping verb is used for all subjects in the past tense?",
+                "correctText": "Did",
+                "rationale": "'Did' is the universal past tense helping verb for I, You, He, She, It, We, and They.",
+                "answerOptions": [
+                    {"text": "Do", "isCorrect": false},
+                    {"text": "Does", "isCorrect": false},
+                    {"text": "Did", "isCorrect": true},
+                    {"text": "Done", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Fill in the blank: 'Why ______ you have my pen?'",
+                "correctText": "do",
+                "rationale": "'Do' is the correct helping verb for the subject 'You'.",
+                "answerOptions": [
+                    {"text": "does", "isCorrect": false},
+                    {"text": "do", "isCorrect": true},
+                    {"text": "is", "isCorrect": false},
+                    {"text": "has", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Select the correct past tense question.",
+                "correctText": "Did you have fun yesterday?",
+                "rationale": "In the past tense, 'Did' is followed by the base verb 'have'.",
+                "answerOptions": [
+                    {"text": "Did you had fun yesterday?", "isCorrect": false},
+                    {"text": "Did you have fun yesterday?", "isCorrect": true},
+                    {"text": "Do you have fun yesterday?", "isCorrect": false},
+                    {"text": "Does you have fun yesterday?", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Which is correct? '______ it rain often in London?'",
+                "correctText": "Does",
+                "rationale": "'It' is third-person singular, requiring 'Does'.",
+                "answerOptions": [
+                    {"text": "Do", "isCorrect": false},
+                    {"text": "Does", "isCorrect": true},
+                    {"text": "Did", "isCorrect": false},
+                    {"text": "Is", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Correct the mistake: 'Does she has the keys?'",
+                "correctText": "Does she have the keys?",
+                "rationale": "'Does' always takes the base form 'have', never 'has'.",
+                "answerOptions": [
+                    {"text": "Do she has the keys?", "isCorrect": false},
+                    {"text": "Does she having the keys?", "isCorrect": false},
+                    {"text": "Does she have the keys?", "isCorrect": true},
+                    {"text": "Did she has the keys?", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Fill in the blank: 'What ______ she want for lunch?'",
+                "correctText": "does",
+                "rationale": "The subject is 'she', so we use 'does'.",
+                "answerOptions": [
+                    {"text": "do", "isCorrect": false},
+                    {"text": "does", "isCorrect": true},
+                    {"text": "did", "isCorrect": false},
+                    {"text": "is", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "In a question, what happens to 'has' when you use 'Does'?",
+                "correctText": "It changes to 'have'.",
+                "rationale": "The helping verb 'does' carries the third-person marker, forcing the main verb into its base form: 'have'.",
+                "answerOptions": [
+                    {"text": "It stays 'has'", "isCorrect": false},
+                    {"text": "It changes to 'have'.", "isCorrect": true},
+                    {"text": "It changes to 'had'", "isCorrect": false},
+                    {"text": "It disappears", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Which Wh- question is grammatically correct?",
+                "correctText": "Where do they work?",
+                "rationale": "Subject 'They' takes 'do' + base verb 'work'.",
+                "answerOptions": [
+                    {"text": "Where does they work?", "isCorrect": false},
+                    {"text": "Where do they works?", "isCorrect": false},
+                    {"text": "Where do they work?", "isCorrect": true},
+                    {"text": "Where did they works?", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Fill in the blank: '______ we have everything we need?'",
+                "correctText": "Do",
+                "rationale": "'We' is plural, so we use 'Do'.",
+                "answerOptions": [
+                    {"text": "Does", "isCorrect": false},
+                    {"text": "Do", "isCorrect": true},
+                    {"text": "Did", "isCorrect": false},
+                    {"text": "Are", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "What is the past tense form of 'Do you have'?",
+                "correctText": "Did you have",
+                "rationale": "The past tense of the helping verb 'do' is 'did'.",
+                "answerOptions": [
+                    {"text": "Do you had", "isCorrect": false},
+                    {"text": "Did you had", "isCorrect": false},
+                    {"text": "Did you have", "isCorrect": true},
+                    {"text": "Does you have", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Which verb form follows 'did' in a question?",
+                "correctText": "Base form (present tense)",
+                "rationale": "'Did' already indicates past tense, so the main verb stays in the base/present form.",
+                "answerOptions": [
+                    {"text": "Past tense form", "isCorrect": false},
+                    {"text": "Base form (present tense)", "isCorrect": true},
+                    {"text": "Ing form", "isCorrect": false},
+                    {"text": "Future tense form", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Which is correct? '______ he like the gift?'",
+                "correctText": "Does",
+                "rationale": "Subject 'He' requires 'Does'.",
+                "answerOptions": [
+                    {"text": "Do", "isCorrect": false},
+                    {"text": "Does", "isCorrect": true},
+                    {"text": "Did", "isCorrect": false},
+                    {"text": "Is", "isCorrect": false}
+                ]
+            },
+            {
+                "question": "Fill in the blank: 'How ______ you feel after the exam?'",
+                "correctText": "did",
+                "rationale": "Since the exam already happened, we use 'did' for the past tense.",
+                "answerOptions": [
+                    {"text": "do", "isCorrect": false},
+                    {"text": "does", "isCorrect": false},
+                    {"text": "did", "isCorrect": true},
+                    {"text": "have", "isCorrect": false}
+                ]
+            }
+        ];
+
+        let cur = 0, score = 0, history = [], t = 0, tInt, attempts = 0;
+        const iN = document.getElementById('sName'), iI = document.getElementById('sId'), sB = document.getElementById('startB');
+
+        function validate() { 
+            const hasName = iN.value.trim().length > 0;
+            sB.disabled = !hasName;
+            sB.style.opacity = hasName ? '1' : '0.3'; 
+        }
+
+        function start() {
+            attempts++;
+            document.getElementById('reg-box').classList.add('hidden');
+            document.getElementById('quiz-box').classList.remove('hidden');
+            startTimer();
+            show();
+        }
+
+        function startTimer() {
+            clearInterval(tInt);
+            t = 0;
+            tInt = setInterval(() => { 
+                t++; 
+                let m=Math.floor(t/60).toString().padStart(2,'0'), 
+                s=(t%60).toString().padStart(2,'0'); 
+                document.getElementById('timer').innerText = `${m}:${s}`; 
+            }, 1000);
+        }
+
+        function show() {
+            const q = data[cur];
+            document.getElementById('nextB').disabled = true;
+            document.getElementById('prog').innerText = `Question ${cur+1} of ${data.length}`;
+            document.getElementById('qText').innerText = q.question;
+            const oD = document.getElementById('opts'); oD.innerHTML = '';
+            q.answerOptions.forEach(o => {
+                const b = document.createElement('button');
+                b.className = "w-full text-left p-5 border-2 border-slate-100 rounded-3xl font-bold text-slate-700 transition hover:border-indigo-300";
+                b.innerText = o.text;
+                b.onclick = () => { 
+                    Array.from(oD.children).forEach(c => c.classList.remove('selected')); 
+                    b.classList.add('selected'); 
+                    b.dataset.c = o.isCorrect; 
+                    b.dataset.t = o.text; 
+                    document.getElementById('nextB').disabled = false; 
+                };
+                oD.appendChild(b);
+            });
+        }
+
+        document.getElementById('nextB').onclick = () => {
+            const sel = document.querySelector('.selected');
+            const isC = sel.dataset.c === "true";
+            if(isC) score++;
+            history.push({ q: data[cur].question, u: sel.dataset.t, c: data[cur].correctText, r: data[cur].rationale, isC });
+            cur++;
+            if(cur < data.length) show(); else finish();
+        };
+
+        function finish() {
+            clearInterval(tInt);
+            document.getElementById('quiz-box').classList.add('hidden');
+            document.getElementById('res-box').classList.remove('hidden');
+            const p = Math.round((score/data.length)*100);
+            document.getElementById('pct').innerText = p;
+            document.getElementById('raw').innerText = `${score} / ${data.length}`;
+            document.getElementById('rn').innerText = iN.value;
+            document.getElementById('ri').innerText = iI.value.trim() || "N/A";
+            document.getElementById('ra').innerText = attempts;
+            document.getElementById('rt').innerText = document.getElementById('timer').innerText;
+            const g = document.getElementById('grade');
+            g.innerText = p >= 40 ? "RESULT: PASSED" : "RESULT: FAILED";
+            g.className = `mt-6 inline-block px-8 py-2 rounded-full font-black text-sm uppercase tracking-widest ${p>=50?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}`;
+            const list = document.getElementById('revList'); list.innerHTML = '';
+            history.forEach((h, i) => {
+                const d = document.createElement('div');
+                d.className = `p-6 rounded-[30px] border-l-[10px] mb-4 ${h.isC ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`;
+                d.innerHTML = `
+                    <p class="font-black text-slate-800">${i+1}. ${h.q}</p>
+                    <p class="text-xs mt-3"><b>Your Choice:</b> ${h.u} ${h.isC?'✅':'❌'}</p>
+                    ${!h.isC ? `<p class="text-xs text-green-700"><b>Correct:</b> ${h.c}</p>` : ''}
+                    <div class="mt-4 p-4 bg-white/60 rounded-2xl text-[10px] text-slate-600 border border-slate-100 italic">
+                        <b class="text-indigo-600 uppercase tracking-widest block mb-1">Mr. Katongo's Rationale:</b>${h.r}
+                    </div>`;
+                list.appendChild(d);
+            });
+        }
+
+        function restart() {
+            attempts++; cur = 0; score = 0; history = []; t = 0;
+            document.getElementById('timer').innerText = "00:00";
+            document.getElementById('res-box').classList.add('hidden');
+            document.getElementById('quiz-box').classList.remove('hidden');
+            startTimer();
+            show();
+        }
+    </script>
+</body>
+</html>
